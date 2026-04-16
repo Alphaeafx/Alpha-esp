@@ -1,1 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alpha FX | Automatización y análisis en un solo lugar</title>
+  <meta name="description" content="Conoce Alpha FX, una nueva solución enfocada en automatización, seguimiento del mercado y acceso rápido a ideas operativas desde Telegram." />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
+    :root {
+      --bg: #07111f;
+      --bg-soft: #0c1b31;
+      --card: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text: #f4f7fb;
+      --muted: #b8c4d6;
+      --primary: #2bd576;
+      --primary-dark: #1ca85a;
+      --accent: #44b3ff;
+      --danger-soft: #ffcf5a;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+      --max: 1180px;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(68,179,255,0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(43,213,118,0.12), transparent 25%),
+        linear-gradient(180deg, #06101c 0%, #081526 100%);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      width: min(92%, var(--max));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      padding: 18px 0;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      display: grid;
+      place-items: center;
+      color: #04101b;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+    }
+
+    .brand span {
+      font-size: 1.05rem;
+    }
+
+    .cta-top {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+    .cta-top:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.12);
+    }
+
+    .hero {
+      padding: 40px 0 28px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 16px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(68,179,255,0.12);
+      border: 1px solid rgba(68,179,255,0.22);
+      color: #bfe2ff;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: clamp(2.1rem, 5vw, 4rem);
+      line-height: 1.06;
+      margin-bottom: 18px;
+      max-width: 760px;
+    }
+
+    .highlight {
+      background: linear-gradient(90deg, #ffffff, #7bd2ff, #68f2a1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+              background-clip: text;
+              color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 670px;
+      margin-bottom: 24px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px 24px;
+      border-radius: 14px;
+      font-weight: 800;
+      transition: 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #5ee795);
+      color: #07111f;
+      box-shadow: 0 12px 30px rgba(43,213,118,0.22);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #36df81, #70f2a4);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.12);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .mini-note {
+      font-size: 0.92rem;
+      color: #9fb0c8;
+    }
+
+    .visual-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .visual-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(43,213,118,0.24), transparent 70%);
+      filter: blur(10px);
+    }
+
+    .robot-frame {
+      border-radius: 22px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a1730 0%, #081222 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .proof-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .proof-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 18px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .proof-item strong {
+      display: block;
+      font-size: 1.15rem;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+
+    .proof-item span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    section {
+      padding: 34px 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(1.7rem, 3vw, 2.7rem);
+      margin-bottom: 10px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, rgba(68,179,255,0.2), rgba(43,213,118,0.16));
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 1.16rem;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .step-number {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      color: #04101b;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .offer-box {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 22px;
+      align-items: center;
+      background: linear-gradient(180deg, rgba(68,179,255,0.08), rgba(43,213,118,0.07));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .offer-list {
+      list-style: none;
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .offer-list li {
+      color: var(--muted);
+      padding-left: 26px;
+      position: relative;
+    }
+
+    .offer-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #6ef0a3;
+      font-weight: bold;
+    }
+
+    .price-card {
+      background: rgba(4, 11, 22, 0.58);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 26px;
+      text-align: center;
+    }
+
+    .price-tag {
+      font-size: 2.4rem;
+      font-weight: 900;
+      margin: 10px 0 4px;
+    }
+
+    .price-desc {
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .disclaimer {
+      margin-top: 18px;
+      font-size: 0.86rem;
+      color: #96a8c1;
+      line-height: 1.6;
+    }
+
+    .faq {
+      display: grid;
+      gap: 14px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 18px;
+      padding: 18px 20px;
+    }
+
+    .faq-item h4 {
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .faq-item p {
+      color: var(--muted);
+    }
+
+    .final-cta {
+      text-align: center;
+      padding-bottom: 56px;
+    }
+
+    .final-box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 28px;
+      padding: 34px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .final-box h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      margin-bottom: 12px;
+    }
+
+    .final-box p {
+      color: var(--muted);
+      max-width: 720px;
+      margin: 0 auto 22px;
+    }
+
+    footer {
+      padding: 18px 0 38px;
+      text-align: center;
+      color: #8ea1bb;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .offer-box,
+      .cards,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .proof-row {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="logo">A</div>
+        <span>ALPHA FX</span>
+      </div>
+
+      <a class="cta-top" href="https://t.me/alphaeafxbot" target="_blank" rel="noopener noreferrer">
+        Entrar al canal
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="badge">Nueva solución enfocada en automatización y agilidad</div>
+
+          <h1>
+            Conoce <span class="highlight">Alpha FX</span>, una nueva propuesta para quienes buscan una experiencia más práctica dentro del mercado.
+          </h1>
+
+          <p>
+            Alpha FX reúne velocidad, organización y seguimiento en un solo lugar. Su propuesta está pensada para quienes quieren acompañar oportunidades con más claridad, menos ruido y acceso directo desde Telegram.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://t.me/alphaeafxbot" target="_blank" rel="noopener noreferrer">
+              Acceder ahora al canal
+            </a>
+            <a class="btn btn-secondary" href="#beneficios">
+              Ver beneficios
+            </a>
+          </div>
+
+          <div class="mini-note">
+            Acceso rápido, comunicación directa y una propuesta pensada para quien valora practicidad.
+          </div>
+        </div>
+
+        <div class="visual-card">
+          <div class="robot-frame">
+            <svg viewBox="0 0 700 520" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-label="Robot de análisis financiero">
+              <defs>
+                <linearGradient id="bgGrad" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#091428"/>
+                  <stop offset="100%" stop-color="#0d1d36"/>
+                </linearGradient>
+                <linearGradient id="robotGrad" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#65dfff"/>
+                  <stop offset="100%" stop-color="#63ef9d"/>
+                </linearGradient>
+                <linearGradient id="screenGrad" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#143661"/>
+                  <stop offset="100%" stop-color="#0d263f"/>
+                </linearGradient>
+              </defs>
+
+              <rect width="700" height="520" fill="url(#bgGrad)"/>
+
+              <g opacity="0.22">
+                <polyline points="20,320 100,280 160,300 240,210 330,250 410,170 500,220 590,110 680,150"
+                          fill="none" stroke="#44b3ff" stroke-width="5"/>
+                <polyline points="20,370 110,350 200,390 290,320 360,340 450,260 530,300 620,240 680,265"
+                          fill="none" stroke="#2bd576" stroke-width="5"/>
+              </g>
+
+              <g transform="translate(180 80)">
+                <rect x="70" y="0" width="200" height="160" rx="34" fill="#0e2037" stroke="url(#robotGrad)" stroke-width="5"/>
+                <circle cx="125" cy="70" r="18" fill="#65dfff"/>
+                <circle cx="215" cy="70" r="18" fill="#65dfff"/>
+                <rect x="135" y="108" width="70" height="12" rx="6" fill="#63ef9d"/>
+                <line x1="170" y1="-28" x2="170" y2="0" stroke="#78e7ff" stroke-width="5"/>
+                <circle cx="170" cy="-40" r="12" fill="#63ef9d"/>
+
+                <rect x="30" y="185" width="280" height="150" rx="30" fill="#0f1f35" stroke="url(#robotGrad)" stroke-width="5"/>
+                <rect x="75" y="225" width="190" height="72" rx="20" fill="url(#screenGrad)" stroke="#1d4f83"/>
+                <polyline points="95,275 125,255 155,260 190,235 225,248 255,215"
+                          fill="none" stroke="#63ef9d" stroke-width="5"/>
+                <circle cx="255" cy="215" r="6" fill="#63ef9d"/>
+
+                <line x1="30" y1="210" x2="-30" y2="260" stroke="#7bd2ff" stroke-width="10"/>
+                <line x1="310" y1="210" x2="370" y2="260" stroke="#7bd2ff" stroke-width="10"/>
+                <line x1="120" y1="335" x2="80" y2="410" stroke="#63ef9d" stroke-width="10"/>
+                <line x1="220" y1="335" x2="260" y2="410" stroke="#63ef9d" stroke-width="10"/>
+
+                <circle cx="-42" cy="270" r="16" fill="#65dfff"/>
+                <circle cx="382" cy="270" r="16" fill="#65dfff"/>
+                <circle cx="72" cy="425" r="16" fill="#63ef9d"/>
+                <circle cx="268" cy="425" r="16" fill="#63ef9d"/>
+              </g>
+
+              <g>
+                <rect x="470" y="340" width="160" height="96" rx="20" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.15)"/>
+                <text x="495" y="375" fill="#ffffff" font-size="18" font-family="Arial">Análisis</text>
+                <text x="495" y="405" fill="#9fd3ff" font-size="14" font-family="Arial">Más enfoque</text>
+                <text x="495" y="425" fill="#9fd3ff" font-size="14" font-family="Arial">Más velocidad</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="proof-row">
+            <div class="proof-item">
+              <strong>Nueva propuesta</strong>
+              <span>Diseñada para una experiencia más práctica</span>
+            </div>
+            <div class="proof-item">
+              <strong>Acceso por Telegram</strong>
+              <span>Más directo y simple desde tu móvil</span>
+            </div>
+            <div class="proof-item">
+              <strong>Entrada rápida</strong>
+              <span>Conoce el canal en pocos segundos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="beneficios">
+      <div class="container">
+        <div class="section-title">
+          <h2>¿Por qué Alpha FX está llamando la atención?</h2>
+          <p>
+            Porque presenta una propuesta diferente: una estructura más directa, una experiencia más ligera y una forma más rápida de seguir el movimiento del mercado desde Telegram.
+          </p>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="icon">⚙️</div>
+            <h3>Automatización práctica</h3>
+            <p>
+              Pensado para quienes valoran herramientas que simplifican el seguimiento y reducen la fricción del día a día.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="icon">📲</div>
+            <h3>Todo más directo</h3>
+            <p>
+              El acceso por Telegram ayuda a centralizar la comunicación y mantener una experiencia rápida desde cualquier lugar.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="icon">🚀</div>
+            <h3>Propuesta competitiva</h3>
+            <p>
+              Una alternativa pensada para quien busca entrar en una nueva opción con un costo de acceso atractivo y una proposta clara.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-title">
+          <h2>Así de simple funciona</h2>
+          <p>
+            Sin vueltas innecesarias. La idea es que conozcas la propuesta, entres al canal y evalúes si encaja con lo que estás buscando.
+          </p>
+        </div>
+
+        <div class="steps">
+          <div class="card">
+            <div class="step-number">1</div>
+            <h3>Entra al canal</h3>
+            <p>
+              Accede desde el botón principal y conoce la propuesta de Alpha FX dentro de Telegram.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="step-number">2</div>
+            <h3>Revisa la dinámica</h3>
+            <p>
+              Observa el formato, la organización del contenido y la experiencia general de uso.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="step-number">3</div>
+            <h3>Toma tu decisión</h3>
+            <p>
+              Evalúa si esta nueva alternativa hace sentido para tu perfil y tu forma de operar.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="offer-box">
+          <div>
+            <div class="badge">Acceso rápido desde Telegram</div>
+            <h2 style="font-size: clamp(1.8rem, 3vw, 2.9rem); margin-bottom: 12px;">
+              Una nueva opción para quienes quieren conocer algo diferente dentro del mercado
+            </h2>
+
+            <p style="color: var(--muted); font-size: 1.04rem;">
+              Alpha FX llega con una propuesta enfocada en simplicidad, agilidad y una entrada más accesible. Si estabas buscando una nueva alternativa para seguir el mercado con más practicidad, este puede ser un buen punto de partida.
+            </p>
+
+            <ul class="offer-list">
+              <li>Acceso directo al canal oficial</li>
+              <li>Experiencia más organizada y rápida</li>
+              <li>Propuesta pensada para facilitar el seguimiento</li>
+              <li>Entrada simple para conocer la solución</li>
+            </ul>
+          </div>
+
+          <div class="price-card">
+            <div class="badge" style="margin-bottom: 8px;">ALPHA FX</div>
+            <div class="price-tag">Nueva propuesta</div>
+            <div class="price-desc">
+              Conoce el canal y evalúa si esta experiencia encaja con lo que estás buscando.
+            </div>
+
+            <a class="btn btn-primary" style="width: 100%;" href="https://t.me/alphaeafxbot" target="_blank" rel="noopener noreferrer">
+              Ir al canal de Telegram
+            </a>
+
+            <div class="disclaimer">
+              Aviso importante: Alpha FX es una herramienta de apoyo y automatización. Toda decisión debe ser tomada con criterio propio. Los resultados pueden variar según contexto, uso y experiencia de cada persona.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-title">
+          <h2>Preguntas frecuentes</h2>
+          <p>
+            Una estructura simple para responder las dudas más comunes y ayudar en la conversión.
+          </p>
+        </div>
+
+        <div class="faq">
+          <div class="faq-item">
+            <h4>¿Qué es Alpha FX?</h4>
+            <p>
+              Es una nueva propuesta enfocada en automatización, seguimiento y acceso rápido a una experiencia más directa dentro del mercado.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h4>¿Dónde accedo?</h4>
+            <p>
+              El acceso principal se realiza a través del canal oficial en Telegram, desde los botones de esta página.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h4>¿Es para cualquier persona?</h4>
+            <p>
+              Está pensado para quienes desean conocer una alternativa más práctica y organizada, siempre evaluando si la propuesta encaja con su perfil.
+            </p>
+          </div>
+
+          <div class="faq-item">
+            <h4>¿Qué hace diferente a Alpha FX?</h4>
+            <p>
+              Su propuesta combina rapidez, acceso directo y una experiencia más simplificada para quienes buscan conocer una nueva opción.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="container">
+        <div class="final-box">
+          <h2>Descubre Alpha FX desde Telegram</h2>
+          <p>
+            Entra ahora, conoce la propuesta y mira de cerca por qué esta nueva solución está despertando interés entre quienes buscan una experiencia más ágil y directa.
+          </p>
+
+          <a class="btn btn-primary" href="https://t.me/alphaeafxbot" target="_blank" rel="noopener noreferrer">
+            Entrar ahora al canal
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © 2026 Alpha FX. Este sitio tiene fines informativos y de presentación.
+    </div>
+  </footer>
+
+</body>
+</html>
